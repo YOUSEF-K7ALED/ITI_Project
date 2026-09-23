@@ -11,3 +11,25 @@
 // - Add a 404 handler for unknown routes
 // - Add the global error handler middleware (must be last)
 // - Export the app
+
+
+const express = require("express");
+const cors = require("cors");
+const morgan = require("morgan");
+
+const profileRoutes = require("./routes/profile.routes");
+const { notFound, errorHandler } = require("./middleware/error.middleware");
+
+const app = express();
+
+app.use(express.json());
+app.use(cors());
+app.use(morgan("dev"));
+
+app.use("/api/profile", profileRoutes);
+// other routes (auth, events, bookings, admin) get mounted here too as they're built
+
+app.use(notFound);
+app.use(errorHandler);
+
+module.exports = app;
