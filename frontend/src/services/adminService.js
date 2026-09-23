@@ -1,0 +1,6 @@
+// API calls for Admin (Person 4)
+// - getDashboardStats()
+// - getAllUsers()
+// - blockUser(userId)
+// - deleteUser(userId)
+// - getAllBookings()
