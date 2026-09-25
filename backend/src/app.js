@@ -17,6 +17,7 @@ const express = require("express");
 const cors = require("cors");
 const morgan = require("morgan");
 
+const eventRoutes = require("./routes/events.routes");
 const profileRoutes = require("./routes/profile.routes");
 const { notFound, errorHandler } = require("./middleware/error.middleware");
 
@@ -27,6 +28,7 @@ app.use(cors());
 app.use(morgan("dev"));
 
 app.use("/api/profile", profileRoutes);
+app.use("/api/events", eventRoutes);
 // other routes (auth, events, bookings, admin) get mounted here too as they're built
 
 app.use(notFound);
