@@ -9,10 +9,11 @@
 
 
 exports.notFound = (req, res, next) => {
-  res.status(404).json({ success: false, message: 'Route not found' });
-}
+  res.status(404).json({ success: false, message: `Route not found: ${req.originalUrl}` });
+};
 
 exports.errorHandler = (err, req, res, next) => {
   console.error(err);
-  res.status(err.statusCode || 500).json({ success: false, message: err.message || 'Server Error'});
+  const statusCode = err.statusCode || 500;
+  res.status(statusCode).json({ success: false, message: err.message || "Server error" });
 };
