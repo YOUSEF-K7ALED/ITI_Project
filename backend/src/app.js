@@ -18,8 +18,9 @@ const morgan = require("morgan");
 
 const authRoutes = require("./routes/auth.routes");
 const eventRoutes = require("./routes/events.routes");
+const adminRoutes = require("./routes/admin.routes");
 const profileRoutes = require("./routes/profile.routes");
-const bookingRoutes = require("./routes/bookingRoutes.js");
+const bookingRoutes = require("./routes/bookings.routes");
 const { notFound, errorHandler } = require("./middleware/error.middleware");
 
 const app = express();
@@ -32,7 +33,8 @@ app.use("/api/auth", authRoutes);
 app.use("/api/profile", profileRoutes);
 app.use("/api/events", eventRoutes);
 app.use("/api/bookings", bookingRoutes);
-// admin routes get mounted here too as they're built
+app.use("/api/admin", adminRoutes);
+app.use(express.static(require("path").join(__dirname, "../../frontend")));
 
 app.use(notFound);
 app.use(errorHandler);

@@ -9,7 +9,7 @@ const {
   createBooking,
   getMyBookings,
   cancelBooking,
-} = require("../controllers/bookingController.js");
+} = require("../controllers/bookings.controller");
 
 const { protect } = require("../middleware/auth.middleware.js");
 
