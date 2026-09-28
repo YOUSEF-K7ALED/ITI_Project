@@ -16,9 +16,11 @@ const express = require("express");
 const cors = require("cors");
 const morgan = require("morgan");
 
+const authRoutes = require("./routes/auth.routes");
+const eventRoutes = require("./routes/events.routes");
 const profileRoutes = require("./routes/profile.routes");
-const { notFound, errorHandler } = require("./middleware/error.middleware");
 const bookingRoutes = require("./routes/bookingRoutes.js");
+const { notFound, errorHandler } = require("./middleware/error.middleware");
 
 const app = express();
 
@@ -26,9 +28,11 @@ app.use(express.json());
 app.use(cors());
 app.use(morgan("dev"));
 
+app.use("/api/auth", authRoutes);
 app.use("/api/profile", profileRoutes);
+app.use("/api/events", eventRoutes);
 app.use("/api/bookings", bookingRoutes);
-// other routes (auth, events, bookings, admin) get mounted here too as they're built
+// admin routes get mounted here too as they're built
 
 app.use(notFound);
 app.use(errorHandler);
