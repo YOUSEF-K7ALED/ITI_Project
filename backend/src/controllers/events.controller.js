@@ -107,10 +107,17 @@ catch (err) {
 
     exports.createEvent=async(req, res, next)=>{
 try{
-const event=await Event.create(req.body)
-//const event=await Event.create({ ...req.body, createdBy: req.user._id });
+//const event=await Event.create(req.body)
+const existingEvent = await Event.findOne({ title: req.body.title });
+if (existingEvent) {
+  return res.status(400).json({ success: false, message: "Event with this title already exists" });
+}
+const event=await Event.create({ ...req.body, createdBy: req.user._id });
 res.json({ success: true, message: "Event created", data: event });
 }catch(err){
+    if(err.code===11000){
+      return res.status(400).json({ success: false, message: "Event with this title already exists" });
+    }
     next(err);
   }
     }

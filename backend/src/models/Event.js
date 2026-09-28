@@ -21,7 +21,7 @@ const mongoose = require('mongoose');
 
 const eventSchema = new mongoose.Schema({
 
-title:{ type: String, required: true , trim: true },
+title:{ type: String, required: true , trim: true , unique: true , minlength: 2 },
 description:{ type: String, required: true , trim: true },
 category:{ type: String, required: true , trim: true ,enum: ["Concert", "Workshop", "Course", "Sports Event", "Conference" ,"Arts Event"]},
 location:{ type: String, required: true , trim: true },
