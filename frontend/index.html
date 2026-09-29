@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">
+<!-- <!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>EventHub</title><link rel="stylesheet" href="css/style.css"></head><body><nav id="navbar"><a class="logo" href="#/">🎟 EventHub</a>
 
@@ -18,5 +18,375 @@
 <script src="js/app.js"></script>
 
 
+</body>
+</html> -->
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>EventHub</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Top navigation bar (the links on the right are filled in by app.js) -->
+  <nav id="navbar">
+    <a class="logo" href="#/">🎟 EventHub</a>
+    <div id="nav-links"></div>
+  </nav>
+
+  <!-- The current page is shown here -->
+  <main id="app"></main>
+
+  <!-- Small message box that appears at the bottom-right -->
+  <div id="toast"></div>
+
+
+  <!-- =====================================================================
+       TEMPLATES
+       These are hidden pieces of HTML. app.js copies a template, fills it
+       with data (elements marked with data-field="...") and shows it.
+       ===================================================================== -->
+
+  <!-- ---------- Navigation links ---------- -->
+
+  <template id="tpl-nav-guest">
+    <a href="#/">Events</a>
+    <a href="#/login">Login</a>
+    <a class="btn" href="#/register">Sign up</a>
+  </template>
+
+  <template id="tpl-nav-user">
+    <a href="#/">Events</a>
+    <a href="#/admin" id="admin-link">Admin</a>
+    <a href="#/bookings">My Bookings</a>
+    <a href="#/profile" data-field="name"></a>
+    <a href="#" id="logout-link">Logout</a>
+  </template>
+
+
+  <!-- ---------- Events list page ---------- -->
+
+  <template id="tpl-events-page">
+    <h1>Discover Events</h1>
+
+    <form class="filters" id="filter-form">
+      <input name="search" placeholder="Search title">
+      <select name="category">
+        <option value="">All categories</option>
+      </select>
+      <input name="location" placeholder="Location">
+      <input name="maxPrice" type="number" min="0" placeholder="Max price">
+      <input name="date" type="date">
+      <button class="btn">Filter</button>
+    </form>
+
+    <div id="events-list" class="grid"></div>
+    <div id="pagination" class="pagination"></div>
+  </template>
+
+  <template id="tpl-event-card">
+    <div class="card">
+      <span class="tag" data-field="category"></span>
+      <h3 data-field="title"></h3>
+      <div class="muted">
+        📅 <span data-field="date"></span> <span data-field="time"></span><br>
+        📍 <span data-field="location"></span>
+      </div>
+      <div class="price" data-field="price"></div>
+      <div class="muted"><span data-field="seats"></span> seats left</div>
+      <a class="btn details-link">Details</a>
+    </div>
+  </template>
+
+  <template id="tpl-no-events">
+    <p class="muted">No events found.</p>
+  </template>
+
+  <template id="tpl-pagination">
+    <a class="btn secondary prev-page">←</a>
+    <span data-field="pageInfo"></span>
+    <a class="btn secondary next-page">→</a>
+  </template>
+
+
+  <!-- ---------- Single event page ---------- -->
+
+  <template id="tpl-event-details">
+    <div class="box">
+      <span class="tag" data-field="category"></span>
+      <h1 data-field="title"></h1>
+      <p data-field="description"></p>
+      <p class="muted">
+        📅 <span data-field="date"></span> <span data-field="time"></span>
+        · 📍 <span data-field="location"></span>
+      </p>
+      <p class="price" data-field="price"></p>
+      <p class="muted"><span data-field="seats"></span> of <span data-field="capacity"></span> seats available</p>
+      <br>
+      <button class="btn" id="book-button"></button>
+      <a class="btn secondary" href="#/">Back</a>
+    </div>
+  </template>
+
+
+  <!-- ---------- Login and Sign up pages ---------- -->
+
+  <template id="tpl-login-page">
+    <form class="box" id="auth-form">
+      <h2>Login</h2>
+      <input name="email" type="email" placeholder="Email" required>
+      <input name="password" type="password" placeholder="Password" minlength="6" required>
+      <button class="btn">Login</button>
+      <a href="#/register" class="muted">No account? Sign up</a>
+    </form>
+  </template>
+
+  <template id="tpl-register-page">
+    <form class="box" id="auth-form">
+      <h2>Create account</h2>
+      <input name="name" placeholder="Name" required>
+      <input name="email" type="email" placeholder="Email" required>
+      <input name="password" type="password" placeholder="Password" minlength="6" required>
+      <button class="btn">Sign up</button>
+      <a href="#/login" class="muted">Have an account? Login</a>
+    </form>
+  </template>
+
+
+  <!-- ---------- My bookings page ---------- -->
+
+  <template id="tpl-bookings-page">
+    <h1>My Bookings</h1>
+
+    <p class="muted" id="no-bookings">No bookings yet.</p>
+
+    <div class="table-wrap" id="bookings-table">
+      <table>
+        <thead>
+          <tr>
+            <th>Event</th>
+            <th>Date</th>
+            <th>Location</th>
+            <th>Status</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </template>
+
+  <template id="tpl-booking-row">
+    <tr>
+      <td>
+        <a class="event-link"></a>
+        <span class="deleted-label">(deleted)</span>
+      </td>
+      <td data-field="date"></td>
+      <td data-field="location"></td>
+      <td><span class="status"></span></td>
+      <td><button class="btn danger cancel-button">Cancel</button></td>
+    </tr>
+  </template>
+
+
+  <!-- ---------- Profile page ---------- -->
+
+  <template id="tpl-profile-page">
+    <h1 class="center">Profile</h1>
+
+    <form class="box" id="profile-form">
+      <h3>Info</h3>
+      <input name="name" required>
+      <input name="email" type="email" required>
+      <button class="btn">Save</button>
+    </form>
+
+    <br>
+
+    <form class="box" id="password-form">
+      <h3>Change password</h3>
+      <input name="currentPassword" type="password" placeholder="Current" required>
+      <input name="newPassword" type="password" placeholder="New" minlength="6" required>
+      <button class="btn">Update</button>
+    </form>
+
+    <br>
+
+    <form class="box" id="delete-form">
+      <h3>Delete account</h3>
+      <input name="password" type="password" placeholder="Password" required>
+      <button class="btn danger">Delete</button>
+    </form>
+  </template>
+
+
+  <!-- ---------- Admin pages ---------- -->
+
+  <template id="tpl-admin-page">
+    <h1>Admin</h1>
+
+    <div class="tabs">
+      <a class="btn secondary" data-tab="stats" href="#/admin/stats">stats</a>
+      <a class="btn secondary" data-tab="users" href="#/admin/users">users</a>
+      <a class="btn secondary" data-tab="bookings" href="#/admin/bookings">bookings</a>
+      <a class="btn secondary" data-tab="events" href="#/admin/events">events</a>
+    </div>
+
+    <div id="admin-content"></div>
+  </template>
+
+  <!-- Admin > stats -->
+  <template id="tpl-admin-stats">
+    <div class="stats"></div>
+  </template>
+
+  <template id="tpl-stat-box">
+    <div class="box">
+      <b data-field="value"></b>
+      <span data-field="label"></span>
+    </div>
+  </template>
+
+  <!-- Admin > users -->
+  <template id="tpl-admin-users">
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Status</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </template>
+
+  <template id="tpl-user-row">
+    <tr>
+      <td data-field="name"></td>
+      <td data-field="email"></td>
+      <td data-field="role"></td>
+      <td data-field="status"></td>
+      <td class="actions">
+        <button class="btn secondary block-button">Block</button>
+        <button class="btn danger delete-button">Delete</button>
+      </td>
+    </tr>
+  </template>
+
+  <!-- Admin > bookings -->
+  <template id="tpl-admin-bookings">
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>User</th>
+            <th>Event</th>
+            <th>Date</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </template>
+
+  <template id="tpl-admin-booking-row">
+    <tr>
+      <td>
+        <span data-field="userName"></span><br>
+        <span class="muted" data-field="userEmail"></span>
+      </td>
+      <td data-field="eventTitle"></td>
+      <td data-field="date"></td>
+      <td><span class="status"></span></td>
+    </tr>
+  </template>
+
+  <!-- Admin > events (form to add/edit + table of all events) -->
+  <template id="tpl-admin-events">
+    <form class="box wide" id="event-form">
+      <h3 data-field="heading"></h3>
+
+      <div class="filters">
+        <label class="muted">Title
+          <input name="title" type="text" required>
+        </label>
+        <label class="muted">Category
+          <select name="category"></select>
+        </label>
+        <label class="muted">Location
+          <input name="location" type="text" required>
+        </label>
+        <label class="muted">Date
+          <input name="date" type="date" required>
+        </label>
+        <label class="muted">Time
+          <input name="time" type="text" placeholder="7:00 PM" required>
+        </label>
+        <label class="muted">Price
+          <input name="price" type="number" min="0" required>
+        </label>
+        <label class="muted">Capacity
+          <input name="capacity" type="number" min="1" required>
+        </label>
+      </div>
+
+      <textarea name="description" placeholder="Description" required></textarea>
+
+      <div>
+        <button class="btn">Save</button>
+        <button type="button" class="btn secondary" id="cancel-edit">Cancel</button>
+      </div>
+    </form>
+
+    <br>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>Date</th>
+            <th>Booked</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </template>
+
+  <template id="tpl-admin-event-row">
+    <tr>
+      <td data-field="title"></td>
+      <td data-field="date"></td>
+      <td data-field="booked"></td>
+      <td>
+        <button class="btn secondary edit-button">Edit</button>
+        <button class="btn danger delete-button">Delete</button>
+      </td>
+    </tr>
+  </template>
+
+
+  <!-- ---------- 404 page ---------- -->
+
+  <template id="tpl-not-found">
+    <h1>404</h1>
+  </template>
+
+
+  <script src="js/app.js"></script>
 </body>
 </html>
